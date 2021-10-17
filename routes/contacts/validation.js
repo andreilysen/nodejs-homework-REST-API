@@ -23,6 +23,13 @@ const validate = async (schema, obj, res, next) => {
     await schema.validateAsync(obj);
     next();
   } catch (err) {
+    if (!obj.favorite) {
+      return res.status(400).json({
+        status: "error",
+        code: 400,
+        message: `missing field favorite, ${err.message.replace(/"/g, "")}`,
+      });
+    }
     res.status(400).json({
       status: "error",
       code: 400,
