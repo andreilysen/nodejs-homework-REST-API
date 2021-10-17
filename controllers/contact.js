@@ -63,8 +63,11 @@ const updateContact = async (req, res, next) => {
 };
 
 const updateStatusContact = async (req, res, next) => {
+  const { favorite } = req.body;
   try {
-    const result = await contacts.updateContact(req.params.contactId, req.body);
+    const result = await contacts.updateContact(req.params.contactId, {
+      favorite,
+    });
     if (result) {
       return res
         .status(200)
