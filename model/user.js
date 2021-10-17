@@ -1,5 +1,8 @@
 const { Schema, model } = require("mongoose");
 const { Subscription } = require("../config/constants");
+const bcrypt = require("bcryptjs");
+
+const SALT_FACTOR = 6;
 
 const userSchema = new Schema({
   password: {
@@ -14,20 +17,32 @@ const userSchema = new Schema({
       const re = /^.+@.+\..+$/;
       return re.test(String(value).toLowerCase());
     },
-    subscription: {
-      type: String,
-      enum: {
-        values: [Subscription.STARTER, Subscription.PRO, Subscription.BUSINESS],
-        message: "Unknown subscription type",
-      },
-      default: "starter",
+  },
+  subscription: {
+    type: String,
+    enum: {
+      values: [Subscription.STARTER, Subscription.PRO, Subscription.BUSINESS],
+      message: "Unknown subscription type",
     },
-    token: {
-      type: String,
-      default: null,
-    },
+    default: Subscription.STARTER,
+  },
+  token: {
+    type: String,
+    default: null,
   },
 });
+
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    const salt = await bcrypt.genSalt(SALT_FACTOR);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+userSchema.methods.isValidPassword = async function (password) {
+  return bcrypt.compare(password, this.password);
+};
 
 const User = model("user", userSchema);
 

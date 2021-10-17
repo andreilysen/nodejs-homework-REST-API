@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const {
   signup,
-  // login,
-  // logout,
+  login,
+  logout,
   // getCurrentUser,
 } = require("../../controllers/users");
 // const {
@@ -11,10 +11,11 @@ const {
 //   validateUpdateStatus,
 //   validateId,
 // } = require("./validation");
+const guard = require("../../helpers/guard");
 
 router.post("/signup", signup);
-// router.post("/login", login);
-// router.post("/logout", logout);
+router.post("/login", login);
+router.post("/logout", guard, logout);
 // router.get("/current", getCurrentUser);
 
 module.exports = router;

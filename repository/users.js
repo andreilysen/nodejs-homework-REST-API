@@ -6,7 +6,17 @@ const findByEmail = async (email) => {
 
 const create = async (options) => {
   const user = new User(options);
+  console.log(user);
+
   return await user.save();
 };
 
-module.exports = { findByEmail, create };
+const updateToken = async (id, token) => {
+  return await User.updateOne({ _id: id }, { token });
+};
+
+const findById = async (id) => {
+  return await User.findById(id);
+};
+
+module.exports = { findByEmail, create, updateToken, findById };
