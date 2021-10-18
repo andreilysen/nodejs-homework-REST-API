@@ -1,20 +1,24 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, SchemaTypes } = require("mongoose");
 
 const contactSchema = new Schema(
   {
     name: {
-      type: String,
+      type: SchemaTypes.String,
       required: [true, "Set name for contact"],
     },
     email: {
-      type: String,
+      type: SchemaTypes.String,
     },
     phone: {
-      type: String,
+      type: SchemaTypes.String,
     },
     favorite: {
-      type: Boolean,
+      type: SchemaTypes.Boolean,
       default: false,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: "user",
     },
   },
   {

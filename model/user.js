@@ -4,33 +4,47 @@ const bcrypt = require("bcryptjs");
 
 const SALT_FACTOR = 6;
 
-const userSchema = new Schema({
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-    validate(value) {
-      const re = /^.+@.+\..+$/;
-      return re.test(String(value).toLowerCase());
+const userSchema = new Schema(
+  {
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      validate(value) {
+        const re = /^.+@.+\..+$/;
+        return re.test(String(value).toLowerCase());
+      },
+    },
+    subscription: {
+      type: String,
+      enum: {
+        values: [Subscription.STARTER, Subscription.PRO, Subscription.BUSINESS],
+        message: "Unknown subscription type",
+      },
+      default: Subscription.STARTER,
+    },
+    token: {
+      type: String,
+      default: null,
     },
   },
-  subscription: {
-    type: String,
-    enum: {
-      values: [Subscription.STARTER, Subscription.PRO, Subscription.BUSINESS],
-      message: "Unknown subscription type",
+  {
+    versionKey: false,
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        delete ret._id;
+        return ret;
+      },
     },
-    default: Subscription.STARTER,
-  },
-  token: {
-    type: String,
-    default: null,
-  },
-});
+    toObject: { virtuals: true },
+  }
+);
 
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {

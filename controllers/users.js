@@ -69,4 +69,25 @@ const logout = async (req, res, next) => {
   return res.status(HttpCode.NO_CONTENT).json({});
 };
 
-module.exports = { signup, login, logout };
+const getCurrentUser = async (req, res, next) => {
+  const userId = req.user._id;
+  const user = await Users.currentUser(userId);
+  if (!user) {
+    return res.status(HttpCode.UNAUTHORIZED).json({
+      status: "error",
+      code: HttpCode.UNAUTHORIZED,
+      message: "Not authorized",
+    });
+  }
+  const { email, subscription } = user;
+  return res.status(HttpCode.OK).json({
+    status: "success",
+    code: HttpCode.OK,
+    date: {
+      email,
+      subscription,
+    },
+  });
+};
+
+module.exports = { signup, login, logout, getCurrentUser };

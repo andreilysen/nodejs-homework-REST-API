@@ -4,7 +4,7 @@ const {
   signup,
   login,
   logout,
-  // getCurrentUser,
+  getCurrentUser,
 } = require("../../controllers/users");
 // const {
 //   validateContact,
@@ -16,6 +16,6 @@ const guard = require("../../helpers/guard");
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", guard, logout);
-// router.get("/current", getCurrentUser);
+router.get("/current", guard, getCurrentUser);
 
 module.exports = router;
