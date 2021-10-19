@@ -1,5 +1,6 @@
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
+const { HttpCode } = require("../../config/constants");
 
 const schemaContact = Joi.object({
   name: Joi.string().min(1).max(30).required(),
@@ -24,15 +25,15 @@ const validate = async (schema, obj, res, next) => {
     next();
   } catch (err) {
     if (!obj.favorite) {
-      return res.status(400).json({
+      return res.status(HttpCode.BAD_REQUEST).json({
         status: "error",
-        code: 400,
+        code: HttpCode.BAD_REQUEST,
         message: `missing field favorite, ${err.message.replace(/"/g, "")}`,
       });
     }
-    res.status(400).json({
+    res.status(HttpCode.BAD_REQUEST).json({
       status: "error",
-      code: 400,
+      code: HttpCode.BAD_REQUEST,
       message: `Field ${err.message.replace(/"/g, "")}`,
     });
   }

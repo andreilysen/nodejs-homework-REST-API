@@ -19,4 +19,14 @@ const currentUser = async (id) => {
   return await User.findById(id);
 };
 
-module.exports = { findByEmail, create, updateToken, currentUser };
+const updateUserStatus = async (id, subscription) => {
+  return await User.updateOne({ _id: id }, subscription);
+};
+
+module.exports = {
+  findByEmail,
+  create,
+  updateToken,
+  currentUser,
+  updateUserStatus,
+};

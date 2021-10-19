@@ -5,17 +5,15 @@ const {
   login,
   logout,
   getCurrentUser,
+  updateStatusUser,
 } = require("../../controllers/users");
-// const {
-//   validateContact,
-//   validateUpdateStatus,
-//   validateId,
-// } = require("./validation");
+const { validateUser } = require("./validation");
 const guard = require("../../helpers/guard");
 
-router.post("/signup", signup);
-router.post("/login", login);
+router.post("/signup", validateUser, signup);
+router.post("/login", validateUser, login);
 router.post("/logout", guard, logout);
 router.get("/current", guard, getCurrentUser);
+router.patch("/subscription", guard, updateStatusUser);
 
 module.exports = router;

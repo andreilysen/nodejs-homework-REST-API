@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Users = require("../repository/users");
-const { HttpCode } = require("../config/constants");
+const { HttpCode, Subscription } = require("../config/constants");
 
 require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -33,7 +33,6 @@ const signup = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
-  // console.log(req.body);
   const user = await Users.findByEmail(email);
   if (!user) {
     return res.status(HttpCode.UNAUTHORIZED).json({
@@ -90,4 +89,31 @@ const getCurrentUser = async (req, res, next) => {
   });
 };
 
-module.exports = { signup, login, logout, getCurrentUser };
+const updateStatusUser = async (req, res, next) => {
+  const userId = req.user._id;
+  const { subscription } = req.body;
+
+  if (
+    subscription === Subscription.STARTER ||
+    subscription === Subscription.PRO ||
+    subscription === Subscription.BUSINESS
+  ) {
+    await Users.updateUserStatus(userId, { subscription });
+    const user = await Users.currentUser(userId);
+    const { email } = user;
+    return res.status(HttpCode.OK).json({
+      status: "success",
+      code: HttpCode.OK,
+      data: {
+        email,
+        subscription,
+      },
+    });
+  }
+  return res.json({
+    status: "error",
+    message: "Unknown status",
+  });
+};
+
+module.exports = { signup, login, logout, getCurrentUser, updateStatusUser };
