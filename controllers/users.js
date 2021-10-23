@@ -24,6 +24,7 @@ const signup = async (req, res, next) => {
         id: newUser.id,
         email: newUser.email,
         subscription: newUser.subscription,
+        avatarURL: newUser.avatarURL,
       },
     });
   } catch (err) {
@@ -116,4 +117,17 @@ const updateStatusUser = async (req, res, next) => {
   });
 };
 
-module.exports = { signup, login, logout, getCurrentUser, updateStatusUser };
+const uploadAvatar = async (req, res, next) => {
+  const pic = req.file;
+
+  return res.status(HttpCode.OK).json({});
+};
+
+module.exports = {
+  signup,
+  login,
+  logout,
+  getCurrentUser,
+  updateStatusUser,
+  uploadAvatar,
+};
