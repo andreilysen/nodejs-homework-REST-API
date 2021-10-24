@@ -1,5 +1,9 @@
 const jwt = require("jsonwebtoken");
+
+const path = require("path");
+const mkdirp = require("mkdirp");
 const Users = require("../repository/users");
+const UploadService = require("../services/file-upload");
 const { HttpCode, Subscription } = require("../config/constants");
 
 require("dotenv").config();
@@ -24,7 +28,7 @@ const signup = async (req, res, next) => {
         id: newUser.id,
         email: newUser.email,
         subscription: newUser.subscription,
-        avatarURL: newUser.avatarURL,
+        avatar: newUser.avatar,
       },
     });
   } catch (err) {
@@ -79,13 +83,14 @@ const getCurrentUser = async (req, res, next) => {
       message: "Not authorized",
     });
   }
-  const { email, subscription } = user;
+  const { email, subscription, avatar } = user;
   return res.status(HttpCode.OK).json({
     status: "success",
     code: HttpCode.OK,
     date: {
       email,
       subscription,
+      avatar,
     },
   });
 };
@@ -118,9 +123,22 @@ const updateStatusUser = async (req, res, next) => {
 };
 
 const uploadAvatar = async (req, res, next) => {
-  const pic = req.file;
+  const userId = String(req.user._id);
+  const file = req.file;
+  const AVATAR_OF_USERS = process.env.AVATAR_OF_USERS;
+  const destination = path.join(AVATAR_OF_USERS, userId);
+  await mkdirp(destination);
+  const uploadService = new UploadService(destination);
+  const avatarURL = await uploadService.save(file, userId);
+  await Users.updateAvatar(userId, avatarURL);
 
-  return res.status(HttpCode.OK).json({});
+  return res.status(HttpCode.OK).json({
+    status: "success",
+    code: HttpCode.OK,
+    data: {
+      avatar: avatarURL,
+    },
+  });
 };
 
 module.exports = {
